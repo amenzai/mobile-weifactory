@@ -5,8 +5,7 @@ Vue.use(Vuex)
 
 const state = {
   loading: false,
-  url: window.sessionStorage.getItem('url') || '',
-  user: window.sessionStorage.getItem('user') || ''
+  userId: parseFloat(window.sessionStorage.getItem('__uid__')) || ''
 }
 const store = new Vuex.Store({
   state,
@@ -14,20 +13,12 @@ const store = new Vuex.Store({
     UPDATE_LOADING(state, status) {
       state.loading = status
     },
-    UPDATE_URL(state, url) {
-      state.url = url
-      if (url) {
-        window.sessionStorage.setItem('url', url)
+    UPDATE_USERID(state, userId) {
+      state.userId = userId
+      if (userId) {
+        window.sessionStorage.setItem('__uid__', JSON.stringify(userId))
       } else {
-        window.sessionStorage.removeItem('url')
-      }
-    },
-    UPDATE_USER(state, user) {
-      state.user = user
-      if (user) {
-        window.sessionStorage.setItem('user', user)
-      } else {
-        window.sessionStorage.removeItem('user')
+        window.sessionStorage.removeItem('__uid__')
       }
     }
   }

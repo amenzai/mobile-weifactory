@@ -1,13 +1,12 @@
 import axios from 'axios'
 import store from '../../store'
-// import { ToastPlugin } from 'vux'
+import { ToastPlugin } from 'vux'
 import querystring from 'querystring'
 
 const commit = store.commit || store.dispatch
-const base = ''
-
+const base = '/'
 axios.defaults.withCredentials = true
-axios.defaults.baseURL = 'http://test.weifactory.vastsum.net:8080/'
+axios.defaults.baseURL = 'http://api.weifactory.vastsum.net:8852/'
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 axios.defaults.headers = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -30,46 +29,18 @@ axios.interceptors.request.use(function(config) {
   return Promise.reject(error)
 })
 axios.interceptors.response.use(function(response) {
-  if (response.status === 200) {
-    if (!response.data.success) {
-      // ToastPlugin.show({
-      //  text: response.message,
-      //  type: 'warn'
-      // })
-    }
-  }
   // 不显示loading
   commit('UPDATE_LOADING', false)
   return response
 }, function(error) {
   // 对响应错误做点什么
-  // ToastPlugin.show({
-  //  text: '服务端异常',
-  //  type: 'warn'
-  // })
+  ToastPlugin.show({
+   text: '服务端异常',
+   type: 'warn'
+  })
   commit('UPDATE_LOADING', false)
   return Promise.reject(error)
 })
-
-var ajax = {
-  get: function(path, params) {
-    var config
-    if (params === void 0) {
-      config = `${base}` + path
-    } else {
-      // params = trimObject(params)
-      config = `${base}` + path + '/' + params
-    }
-    return axios.get(config).then(res => res.data)
-  },
-  post: function(path, params, type) {
-    if (params === void 0) {
-      params = {}
-    }
-    params = trimObject(params, type)
-    return axios.post(`${base}` + path, params).then(res => res.data)
-  }
-}
 
 function trimObject(data, type) {
   var obj = JSON.parse(JSON.stringify(data));
@@ -86,4 +57,47 @@ function trimObject(data, type) {
   return obj
 }
 
-export default ajax
+export default {
+  get: function (path, params) {
+    var config
+    if (params === void 0) {
+      config = base + path
+    } else {
+      // params = trimObject(params, type) //  type为true不过滤空字符串的发送
+      config = base + path + '/' + params
+    }
+    return axios.get(config).then(res => res.data)
+    return new Promise((resolve, reject) => {
+      axios.get(config).then(res => {
+        if (res.data.success) {
+          resolve(res.data)
+        } else {
+          ToastPlugin.show({
+           text: res.data.message,
+           type: 'error'
+          })
+          reject(res.data)
+        }
+      })
+    })
+  },
+  post: function(path, params, type) {
+    if (params === void 0) {
+      params = {}
+    }
+    params = trimObject(params, type)
+    return new Promise((resolve, reject) => {
+      axios.post(base + path, params).then(res => {
+        if (res.data.success) {
+          resolve(res.data)
+        } else {
+          ToastPlugin.show({
+           text: res.data.message,
+           type: 'error'
+          })
+          reject(res.data)
+        }
+      })
+    })
+  }
+}

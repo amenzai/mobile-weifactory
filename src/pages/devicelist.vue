@@ -13,12 +13,13 @@ export default {
   data() {
       return {
         id: '',
-        deviceList: []
+        deviceList: [],
+        userId: '',
       }
     },
     created() {
       this.id = this.$route.params.id
-      this.userId = JSON.parse(window.sessionStorage.getItem('user')).userId
+      this.userId = this.$store.state.userId
       this.getList()
     },
     methods: {
