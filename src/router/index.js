@@ -46,15 +46,12 @@ const commit = store.commit
 const loginUrl = '/login'
 myRouter.beforeEach((to, from, next) => {
   if (to.path === loginUrl) {
-    commit('UPDATE_USER', '')
+    commit('UPDATE_USERID', '')
   }
-  if (!window.sessionStorage.getItem('user') && to.path !== loginUrl && to.path.indexOf('register') < 0) {
-    if (from.path !== loginUrl) {
-      commit('UPDATE_URL', from.path)
-    }
+  if (!store.state.userId && to.path !== loginUrl && to.path.indexOf('register') < 0) {
     next(loginUrl)
   } else {
-    commit('UPDATE_LOADING', true)
+    // commit('UPDATE_LOADING', true)
     if (to.path !== from.path) {
       window.document.title = to.name
     }
@@ -63,7 +60,7 @@ myRouter.beforeEach((to, from, next) => {
 })
 
 myRouter.afterEach(route => {
-  commit('UPDATE_LOADING', false)
+  // commit('UPDATE_LOADING', false)
 })
 
 export default myRouter

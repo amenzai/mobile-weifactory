@@ -16,7 +16,7 @@ const store = new Vuex.Store({
     UPDATE_USERID(state, userId) {
       state.userId = userId
       if (userId) {
-        window.sessionStorage.setItem('__uid__', JSON.stringify(userId))
+        window.sessionStorage.setItem('__uid__', userId)
       } else {
         window.sessionStorage.removeItem('__uid__')
       }

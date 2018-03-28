@@ -6,22 +6,15 @@ import router from './router'
 import FastClick from 'fastclick'
 // import './common/css/style.css'
 import store from './store'
-import ajax from './common/js/ajax.js'
-import components from './components'
-const echarts = require('echarts/lib/echarts')
-require('echarts/lib/chart/line');
-require('echarts/lib/chart/pie');
-// require('echarts/lib/component/toolbox');
-require('echarts/lib/component/tooltip');
+import util from './common/js'
+import VuxUI from './components/vuxui'
 
 FastClick.attach(document.body)
 
-Vue.use(components)
-
-Vue.prototype.$ajax = ajax
+Vue.use(VuxUI)
+Vue.use(util)
 
 Vue.config.devtools = true
-Vue.prototype.$echarts = echarts 
 
   /* eslint-disable no-new */
 new Vue({
