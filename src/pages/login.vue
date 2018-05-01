@@ -45,7 +45,7 @@
             time: 1000,
             type: 'success'
           })
-          this.$router.push('/home')
+          this.$router.push('/')
         })
       }
     }
