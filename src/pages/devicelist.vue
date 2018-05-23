@@ -11,34 +11,32 @@
 <script>
 export default {
   data() {
-      return {
-        id: '',
-        deviceList: [],
-        userId: '',
-      }
-    },
-    created() {
-      this.id = this.$route.params.id
-      this.userId = this.$store.state.userId
-      this.getList()
-    },
-    methods: {
-      getList() {
-        if (this.userId === 2) {
-          this.$ajax.get('device/list/1/1000')
-            .then(res => {
-              console.log('', res);
-              this.deviceList = res.data.list;
-            })
-        } else {
-          this.$ajax.get('device/deviceList', this.userId)
-            .then(res => {
-              console.log('', res);
-              this.deviceList = res.data;
-            })
-        }
+    return {
+      id: '',
+      deviceList: [],
+      userId: ''
+    }
+  },
+  created() {
+    this.id = this.$route.params.id
+    this.userId = this.$store.state.userId
+    this.getList()
+  },
+  methods: {
+    getList() {
+      if (this.userId === 2) {
+        this.$ajax.get('device/list/1/1000').then(res => {
+          console.log('', res)
+          this.deviceList = res.data.list
+        })
+      } else {
+        this.$ajax.get('device/deviceList', this.userId).then(res => {
+          console.log('', res)
+          this.deviceList = res.data
+        })
       }
     }
+  }
 }
 </script>
 <style scoped>
