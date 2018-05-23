@@ -1,10 +1,10 @@
 <template>
   <div>
     <group v-if="id === '1'" title="请选择设备">
-      <cell :title="item.sn" is-link v-for="(item,index) in deviceList" :key="index" :link="`/home/btn-control/${item.sn}`"></cell>
+      <cell :title="item.sn" is-link v-for="(item,index) in deviceList" :key="index" :link="`/btn-control/${item.sn}`"></cell>
     </group>
     <group v-else title="请选择设备">
-      <cell :title="item.sn" is-link v-for="(item,index) in deviceList" :key="index" :link="`/home/historydata/${item.deviceId}`"></cell>
+      <cell :title="item.sn" is-link v-for="(item,index) in deviceList" :key="index" :link="`/historydata/${item.deviceId}`"></cell>
     </group>
   </div>
 </template>

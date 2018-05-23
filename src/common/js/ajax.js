@@ -1,12 +1,13 @@
 import axios from 'axios'
 import store from '../../store'
+import config from './config'
 import { ToastPlugin } from 'vux'
 import querystring from 'querystring'
 
 const commit = store.commit || store.dispatch
-const base = '/'
+const base = ''
 axios.defaults.withCredentials = true
-axios.defaults.baseURL = 'http://api.weifactory.vastsum.net:8852/'
+axios.defaults.baseURL = config.httpServer
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 axios.defaults.headers = {
   'Content-Type': 'application/x-www-form-urlencoded'
