@@ -1,85 +1,88 @@
 import axios from 'axios'
-import store from '../../store'
+import router from '../../router'
 import config from './config'
-import { ToastPlugin } from 'vux'
+import { Toast } from 'vant'
 import querystring from 'querystring'
 
-const commit = store.commit || store.dispatch
-const base = ''
+// axios.defaults.headers = {   referer:
+// 'http://api.weifactory.vastsum.net:8852',   host:
+// 'api.weifactory.vastsum.net:8852' }
 axios.defaults.withCredentials = true
 axios.defaults.baseURL = config.httpServer
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 axios.defaults.headers = {
   'Content-Type': 'application/x-www-form-urlencoded'
 }
-axios.defaults.transformRequest = [
-  function(data) {
-    return querystring.stringify(data)
-  }
-]
+axios.defaults.transformRequest = [function(data) {
+  return querystring.stringify(data)
+}]
 axios.defaults.paramsSerializer = function(params) {
-  return querystring.stringify(params, {
-    arrayFormat: 'brackets'
-  })
+  return querystring.stringify(params, { arrayFormat: 'brackets' })
 }
 
-axios.interceptors.request.use(function(config) {
-  commit('UPDATE_LOADING', true)
-  return config
-}, function(error) {
-  return Promise.reject(error)
-})
-axios.interceptors.response.use(function(response) {
-  // 不显示loading
-  commit('UPDATE_LOADING', false)
-  return response
-}, function(error) {
-  // 对响应错误做点什么
-  ToastPlugin.show({
-   text: '服务端异常',
-   type: 'warn'
+axios
+  .interceptors
+  .request
+  .use(function(config) {
+    Toast.loading({
+      duration: 0, // 持续展示 toast
+      forbidClick: true, // 禁用背景点击
+      loadingType: 'spinner',
+      message: '加载中'
+    });
+    return config
+  }, function(error) {
+    Toast.clear()
+    return Promise.reject(error)
   })
-  commit('UPDATE_LOADING', false)
-  return Promise.reject(error)
-})
+axios
+  .interceptors
+  .response
+  .use(function(response) {
+    // 不显示loading
+    Toast.clear()
+    return response
+  }, function(error) {
+    // 对响应错误做点什么
+    Toast.clear()
+    Toast.fail('服务正在升级，请稍后再试！');
+    return Promise.reject(error)
+  })
 
 function trimObject(data, type) {
   var obj = JSON.parse(JSON.stringify(data));
   for (var k in obj) {
-    if (Object.prototype.toString.call(obj[k]).slice(8, -1) === 'String') {
+    if (typeof obj[k] === 'string') {
       obj[k] = obj[k].trim()
-      if (obj[k] === '' && type === undefined) {
-        delete obj[k];
-      }
-    } else if (Object.prototype.toString.call(obj[k]).slice(8, -1) === 'Object') {
-      trimObject(obj[k])
+    }
+    if (!obj[k] && type == undefined) {
+      delete obj[k];
     }
   }
   return obj
 }
 
 export default {
-  get: function (path, params) {
+  get: function(path, params) {
     var config
     if (params === void 0) {
-      config = base + path
+      config = path
     } else {
-      // params = trimObject(params, type) //  type为true不过滤空字符串的发送
-      config = base + path + '/' + params
+      config = path + '/' + params
     }
-    return axios.get(config).then(res => res.data)
     return new Promise((resolve, reject) => {
-      axios.get(config).then(res => {
-        if (res.data.success) {
-          resolve(res.data)
-        } else {
-          ToastPlugin.show({
-           text: res.data.message,
-           type: 'error'
-          })
-          reject(res.data)
-        }
-      })
+      axios
+        .get(config)
+        .then(res => {
+          if (res.data.success) {
+            resolve(res.data)
+          } else {
+            setTimeout(() => {
+              Toast.fail(res.data.message);
+            }, 500)
+            reject(res.data)
+          }
+        })
     })
   },
   post: function(path, params, type) {
@@ -88,17 +91,18 @@ export default {
     }
     params = trimObject(params, type)
     return new Promise((resolve, reject) => {
-      axios.post(base + path, params).then(res => {
-        if (res.data.success) {
-          resolve(res.data)
-        } else {
-          ToastPlugin.show({
-           text: res.data.message,
-           type: 'error'
-          })
-          reject(res.data)
-        }
-      })
+      axios
+        .post(path, params)
+        .then(res => {
+          if (res.data.success) {
+            resolve(res.data)
+          } else {
+            setTimeout(() => {
+              Toast.fail(res.data.message);
+            }, 500)
+            reject(res.data)
+          }
+        })
     })
   }
 }
